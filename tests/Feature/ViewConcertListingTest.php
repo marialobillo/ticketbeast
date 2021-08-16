@@ -23,7 +23,7 @@ class ViewConcertListingTest extends TestCase
             'subtitle' => 'with Animosity and Lethargy',
             'date' => Carbon::parse('December 13, 2016 8:00pm'),
             'ticket_price' => 3250,
-            'venue' => 'The Mosh Pit',
+            'venue' => 'The Moush Pit',
             'venue_address' => '123 Example Lane',
             'city' => 'Laraville',
             'state' => 'ON',

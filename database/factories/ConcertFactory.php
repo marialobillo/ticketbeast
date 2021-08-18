@@ -35,4 +35,32 @@ class ConcertFactory extends Factory
             'additional_information' => 'Some sample additional information.'
         ];
     }
+
+    /**
+     * Define the published at attribute value.
+     *
+     * @return array
+     */
+    public function published()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'published_at' => Carbon::parse('-1 week'),
+            ];
+        });
+    }
+
+    /**
+     * Define the unpublished at attribute value for concerts.
+     *
+     * @return array
+     */
+    public function unpublished()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'published_at' => null,
+            ];
+        });
+    }
 }

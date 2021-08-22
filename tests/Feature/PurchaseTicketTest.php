@@ -2,18 +2,24 @@
 
 namespace Tests\Feature;
 
+use App\Billing\FakePaymentGateway;
+use App\Billing\PaymentGateway;
 use App\Models\Concert;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class PurchaseTicketTest extends TestCase
 {
+    use RefreshDatabase, DatabaseMigrations;
     /**
      * @test
      */
     public function customer_can_purchase_concert_tickets()
     {
+        $paymentGateway = new FakePaymentGateway;
+        $this->app->instance(PaymentGateway::class, $paymentGateway);
         // Arrange
         // Create a concert
         $concert = Concert::factory()->published()->create([
@@ -22,21 +28,22 @@ class PurchaseTicketTest extends TestCase
 
         //Act
         // Purchase concert tickets
-        $this->json('POST', '/concerts/{$concert->id}/orders', [
+        $response = $this->json('POST', '/concerts/{$concert->id}/orders', [
             'email' => 'jane@mail.com',
             'ticket_quantity' => 3,
-            'payment_token' => $paymentGateway->getValidToken(),
+            'payment_token' => $paymentGateway->getValidTestToken(),
         ]);
 
         // Assert
+        $response->assertStatus(201);
         // Make sure the customer was charged the correct amount
         $order = $concert->orders()->where('email', 'jane@mail.com')->first();
-        $this->assertEquals(9750, $paymentGateway->totalCharges);
+        $response->assertEquals(9750, $paymentGateway->totalCharges);
         // Make sure that an order exists for this customer
         $this->assertTrue($concert->orders->contains(function($order){
             return $order->email == 'jane@mail.com';
         }));
-        $this->assertNotNull($order);
-        $this->assertEquals(3, $order->tickets->count());
+        $response->assertNotNull($order);
+        $response->assertEquals(3, $order->tickets->count());
     }
 }

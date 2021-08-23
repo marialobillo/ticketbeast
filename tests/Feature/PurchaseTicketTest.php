@@ -12,7 +12,7 @@ use Tests\TestCase;
 
 class PurchaseTicketTest extends TestCase
 {
-    use RefreshDatabase, DatabaseMigrations;
+    use DatabaseMigrations, RefreshDatabase;
     /**
      * @test
      */
@@ -23,7 +23,7 @@ class PurchaseTicketTest extends TestCase
         // Arrange
         // Create a concert
         $concert = Concert::factory()->published()->create([
-            'ticket_price' => 3250
+            'ticket_price' => 3250,
         ]);
 
         //Act

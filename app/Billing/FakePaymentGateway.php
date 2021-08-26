@@ -24,7 +24,6 @@ class FakePaymentGateway implements PaymentGateway
 
     public function totalCharges()
     {
-        dd($this->charges);
         return $this->charges->sum();
     }
 }

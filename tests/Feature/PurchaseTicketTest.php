@@ -48,4 +48,20 @@ class PurchaseTicketTest extends TestCase
         $this->assertNotNull($order);
         $this->assertEquals(3, $order->tickets->count());
     }
+
+    /** @test */
+    public function email_is_required_to_purchase_tickets()
+    {
+        $paymentGateway = new FakePaymentGateway;
+        $this->app->instance(PaymentGateway::class, $paymentGateway);
+
+        $concert = Concert::factory()->create();
+
+        $response = $this->json('POST', '/concerts/{$concert->id}/orders', [
+            'ticket_quantity' => 3,
+            'payment_token' => $paymentGateway->getValidTestToken(),
+        ]);
+
+        $response->assertStatus(422);
+    }
 }
